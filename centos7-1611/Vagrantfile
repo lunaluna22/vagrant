@@ -3,28 +3,30 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "luna-luna/centos7-1611"
-#  config.vm.box_url = "https://atlas.hashicorp.com/luna-luna/boxes/centos7-1611"
   config.ssh.insert_key = false
   config.vm.network "private_network", ip: "192.168.56.21"
+  config.vm.synced_folder "./vagrant_data", "/vagrant_data", :mount_options => ["dmode=0777","fmode=0666"]
 
-
+  # config.vm.box_url = ""
   # config.vm.box_check_update = false
   # config.vm.network "forwarded_port", guest: 80, host: 8080
-  # config.vm.network "private_network", ip: "192.168.33.10"
   # config.vm.network "public_network"
-  # config.vm.synced_folder "../data", "/vagrant_data"
 
   # VBOX設定
-   config.vm.provider "virtualbox" do |vb|
-     # VBOX名称
-     vb.name = "centos7-1611"
-     vb.gui  = false
-     vb.memory = "2048"
-   end
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "centos7-1611"
+    vb.gui  = false
+    vb.memory = "2048"
+  end
 
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get install -y apache2
-  # SHELL
+  # Provisioning(ansible)
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.install = false
+    ansible.verbose = true
+    ansible.limit   = "all"
+    ansible.playbook          = "ansible/playbook.yml"
+    ansible.inventory_path    = "ansible/inventory"
+    ansible.provisioning_path = "/vagrant_data"
+  end
 
 end
