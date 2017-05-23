@@ -127,10 +127,10 @@
     - name: install mysql
       yum: name={{ item }} state=present
       with_items:
-        - mysql-community-server-{{mysql_version}}-1.el7
-        - mysql-community-client-{{mysql_version}}-1.el7
-        - mysql-community-common-{{mysql_version}}-1.el7
-        - mysql-community-libs-{{mysql_version}}-1.el7
+        - mysql-community-server-{{mysql_version}}
+        - mysql-community-client-{{mysql_version}}
+        - mysql-community-common-{{mysql_version}}
+        - mysql-community-libs-{{mysql_version}}
 
     # MySQL起動と自動起動ON
     - name: start MySQL
@@ -185,6 +185,14 @@
       copy: src=./my.cnf dest=/etc/my.cnf backup=yes owner=root group=root mode=644
       # MySQL再起動
       notify: restart MySQL
+
+    # memcachedインストール
+    - name: install memcached
+      yum: name=memcached state=present enablerepo=remi
+
+    # memcached起動と自動起動ON
+    - name: start memcached
+      service: name=memcached state=started enabled=yes
 
   handlers:
     - name: restart php-fpm
