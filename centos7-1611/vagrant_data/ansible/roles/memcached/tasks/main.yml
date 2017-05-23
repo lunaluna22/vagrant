@@ -1,0 +1,8 @@
+# memcachedインストール
+- name: install memcached
+  yum: name=memcached state=present enablerepo=remi
+
+# memcached起動と自動起動ON
+- name: start memcached
+  service: name=memcached state=started enabled=yes
+

@@ -1,0 +1,10 @@
+## remiインストールタスク
+# remiリポジトリのインストール
+- name: install remi
+  yum: name={{remi_repo}} state=present
+
+# remiリポジトリの無効化
+- name: disabled remi repos
+  replace: dest={{item}} regexp="enabled *= *1" replace="enabled=0"
+  with_fileglob:
+    - /etc/yum.repos.d/remi*.repo

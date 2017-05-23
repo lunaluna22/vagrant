@@ -1,0 +1,14 @@
+## php-fpmタスク
+# php-fpm起動と自動起動ON
+- name: start php-fpm
+  service: name=php-fpm state=started enabled=yes
+
+# php-fpm.conf、www.confコピー
+- name: copy php-fpm config files
+  # backupは必ずとる
+  copy: src={{ item.src }} dest={{ item.desc }} backup=yes owner=root group=root mode=644
+  # php-fpm再起動
+  notify: restart php-fpm
+  with_items:
+    - { src: ./php-fpm.conf, desc: /etc/php-fpm.conf }
+    - { src: ./www.conf, desc: /etc/php-fpm.d/www.conf }

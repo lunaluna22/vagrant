@@ -1,0 +1,19 @@
+## nginxタスク
+# nginxリポジトリ追加
+- name: add nginx repo
+  copy: src=./nginx.repo dest=/etc/yum.repos.d/nginx.repo owner=root group=root mode=0644
+
+# nginxインストール
+- name: install nginx
+  yum: name=nginx-{{nginx_version}} state=present enablerepo=nginx
+
+# nginx起動と自動起動ON
+- name: start nginx
+  service: name=nginx state=started enabled=yes
+
+# nginx.confコピー
+- name: copy nginx.conf
+  # backupは必ずとる
+  copy: src=./nginx.conf dest=/etc/nginx/nginx.conf backup=yes owner=root group=root mode=644
+  # nginx再起動
+  notify: restart nginx

@@ -1,0 +1,37 @@
+## PHPタスク
+# PHPインストール
+- name: install php
+  yum: name={{ item }} state=present enablerepo=remi,{{remi_php_version}},epel
+  with_items:
+    - php-cli-{{ php7_version }}
+    - php-common-{{ php7_version }}
+    - php-dba-{{ php7_version }}
+    - php-devel-{{ php7_version }}
+    - php-fpm-{{ php7_version }}
+    - php-gd-{{ php7_version }}
+    - php-gmp-{{ php7_version }}
+    - php-intl-{{ php7_version }}
+    - php-mbstring-{{ php7_version }}
+    - php-mcrypt-{{ php7_version }}
+    - php-mysqlnd-{{ php7_version }}
+    - php-opcache-{{ php7_version }}
+    - php-pdo-{{ php7_version }}
+    - php-process-{{ php7_version }}
+    - php-soap-{{ php7_version }}
+    - php-xml-{{ php7_version }}
+    - php-xmlrpc-{{ php7_version }}
+
+# PHP系モジュールインストール
+- name: install php modules
+  yum: name={{ item }} state=present enablerepo=remi,{{remi_php_version}},epel
+  with_items:
+    - php-pear
+    - php-pecl-apcu
+    - php-pecl-jsonc
+    - php-pecl-memcached
+    - php-pecl-redis
+
+# php.iniコピー
+- name: copy php.ini
+  # backupは必ずとる
+  copy: src=./php.ini dest=/etc/php.ini backup=yes owner=root group=root mode=644
