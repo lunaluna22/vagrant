@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
 
   # Provisioning(ansible)
   config.vm.provision "ansible_local" do |ansible|
-    ansible.install = false
+    ansible.install = true
     ansible.verbose = true
     ansible.limit   = "all"
     ansible.playbook          = "ansible/site.yml"
