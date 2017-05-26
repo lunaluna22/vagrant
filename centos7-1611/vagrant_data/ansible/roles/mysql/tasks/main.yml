@@ -24,42 +24,59 @@
 - name: start MySQL
   service: name=mysqld state=started enabled=yes
 
+# my.cnfコピー
+- name: copy my.cnf
+  # backupは必ずとる
+  copy: src=./my.cnf dest=/etc/my.cnf backup=yes owner=root group=root mode=644
+  # MySQL再起動
+#  notify: restart MySQL
+  register: ret
+
+# MySQL強制再起動
+- name: restart MySQL after copying
+  service: name=mysqld state=restarted
+  when: ret.changed
+
 # ファイル存在チェック
-- name: check change password completion file
+- name: check change password .my.cnf file
   stat: path=~/.my.cnf
   register: fm
 
-# 初期パスワードget
-- name: get mysql password
+# 初期パスワードget(初期セットアップ時のみ実行)
+- name: get mysql initial password
   shell: "grep 'password is generated' /var/log/mysqld.log | awk -F'root@localhost: ' '{print $2}' creates=/root/.my.cnf"
   register: mysql_initial_root_password
   when: not fm.stat.exists
 
 - debug: var=mysql_initial_root_password.stdout
 
-# root ユーザの初期パスワード変更
-- name: mysql root change password
-  shell: |
-    mysql -u root -p'{{ mysql_initial_root_password.stdout }}' --connect-expired-password -e "SET GLOBAL validate_password_length=4;"
-    mysql -u root -p'{{ mysql_initial_root_password.stdout }}' --connect-expired-password -e "SET GLOBAL validate_password_policy=LOW;"
-    mysql -u root -p'{{ mysql_initial_root_password.stdout }}' --connect-expired-password -e "SET PASSWORD FOR root@localhost=PASSWORD('{{mysql_root_password}}');"
+# root ユーザの初期パスワード変更(初期セットアップ時のみ実行)
+- name: mysql root change initial password
+  shell: mysql -u root -p'{{ mysql_initial_root_password.stdout }}' --connect-expired-password -e "SET PASSWORD FOR root@localhost=PASSWORD('{{mysql_root_password}}');"
   register: ret
   when: mysql_initial_root_password.stdout is defined and mysql_initial_root_password.stdout != ""
 
-# .my.cnf作成
-- name: /root/.my.cnf by template
+# .my.cnf作成(初期セットアップ時のみ実行)
+- name: create .my.cnf by template
   template: src=./.my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=644 force=no
 
 # ファイル存在チェック
-- name: check change password completion file
+- name: check change password .my.cnf file
   stat: path=~/.my.cnf
   register: fm
 
-# root ユーザの初期パスワード変更
+# root ユーザのパスワード変更
 - name: mysql root change password host all
   mysql_user: name=root password={{mysql_root_password}} host_all=yes
+  register: ret
   when: fm.stat.exists
 
+# root ユーザのパスワード変更に伴う.my.cnfの更新
+- name: update .my.cnf by template
+  template: src=./.my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=644 force=yes
+  when: ret.changed
+
+# anonymous ユーザ削除
 - name: delete anonymous user
   mysql_user: name="" host="{{ item }}" state=absent
   with_items:
@@ -67,10 +84,5 @@
     - localhost
   when: fm.stat.exists
 
-# my.cnfコピー
-- name: copy my.cnf
-  # backupは必ずとる
-  copy: src=./my.cnf dest=/etc/my.cnf backup=yes owner=root group=root mode=644
-  # MySQL再起動
-  notify: restart MySQL
+
 

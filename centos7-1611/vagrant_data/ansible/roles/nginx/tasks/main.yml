@@ -15,5 +15,9 @@
 - name: copy nginx.conf
   # backupは必ずとる
   copy: src=./nginx.conf dest=/etc/nginx/nginx.conf backup=yes owner=root group=root mode=644
-  # nginx再起動
-  notify: restart nginx
+  register: ret
+
+# nginx強制再起動
+- name: restart nginx after copying
+  service: name=nginx state=restarted
+  when: ret.changed
