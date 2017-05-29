@@ -7,11 +7,15 @@
 - name: copy php-fpm config files
   # backupは必ずとる
   copy: src={{ item.src }} dest={{ item.desc }} backup=yes owner=root group=root mode=644
-  # php-fpm再起動
   with_items:
     - { src: ./php-fpm.conf, desc: /etc/php-fpm.conf }
     - { src: ./www.conf, desc: /etc/php-fpm.d/www.conf }
   register: ret
+
+# Session格納ディレクトリのパーミッション変更
+- name: chgrp session dir
+  file: path="/var/lib/php/session" group="nginx"
+
 
 # php-fpm強制再起動
 - name: php-fpm after copying
