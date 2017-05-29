@@ -6,13 +6,15 @@
   vars:
 
   roles:
+    - common
     - remi
     - nginx
     - php7
     - php-fpm
     - mysql
     - memcached
-    - frontwebapp
+#    - frontwebapp
+    - phpmyadmin
 
   tasks:
 
