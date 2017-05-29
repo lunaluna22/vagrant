@@ -1,0 +1,6 @@
+expand_dir_name: "phpMyAdmin-4.7.0-all-languages"
+download_file_name: "{{ expand_dir_name }}.tar.gz"
+download_url: "https://files.phpmyadmin.net/phpMyAdmin/4.7.0/{{ download_file_name }}"
+install_root_dir: "/data"
+install_dir: "phpmyadmin"
+sha256sum: "6a805ed3831b0fee961296186518171e9e5ba3816bf50d26a9aa641f2cb42335"
