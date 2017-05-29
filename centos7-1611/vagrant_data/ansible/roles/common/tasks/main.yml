@@ -1,4 +1,4 @@
 ## commonタスク
 - name: install wget
-  yum: name=wget state=present
+  yum: name="wget" state="present"
 

@@ -13,7 +13,7 @@
     - php-fpm
     - mysql
     - memcached
-#    - frontwebapp
+    - frontwebapp
     - phpmyadmin
 
   tasks:

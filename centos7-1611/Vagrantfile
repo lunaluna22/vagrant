@@ -17,8 +17,8 @@ Vagrant.configure("2") do |config|
     vb.name = "centos7-1611"
     vb.gui  = false
     vb.memory = "2048"
-    vb.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
-    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
 
   # Provisioning(ansible)
