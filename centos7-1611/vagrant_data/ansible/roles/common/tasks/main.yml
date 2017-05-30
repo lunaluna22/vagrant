@@ -2,3 +2,5 @@
 - name: install wget
   yum: name="wget" state="present"
 
+- name: install git
+  yum: name="git" state="present"
