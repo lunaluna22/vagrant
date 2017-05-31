@@ -1,0 +1,23 @@
+## capistranoタスク
+# Gemfile格納ディレクトリを作成
+- name: create Gemfile dir
+  file: path="~/gemfiles/capistrano" state="directory" owner=root group="root" mode="0644"
+
+# capistrano用Gemfileをcopy
+- name: copy Gemfile
+  copy: src="./Gemfile" dest="~/gemfiles/capistrano/Gemfile" backup="yes" owner="root" group="root" mode="644"
+
+# cap 存在チェック
+- name: check exist capistrano
+  shell: "bash -lc 'cap -v'"
+  register: ret_exist_cap
+  changed_when: false
+  failed_when: false
+
+# capistranoをbundle install
+- name: install capistrano
+  shell: "bash -lc 'cd ~/gemfiles/capistrano && bundle install && rbenv rehash'"
+  when: ret_exist_cap.rc != 0
+  register: ret_install_cap
+  failed_when: ret_install_cap.rc != 0
+
