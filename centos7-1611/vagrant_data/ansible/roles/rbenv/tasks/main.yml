@@ -1,0 +1,78 @@
+## rbenvインストールタスク
+# 必要モジュールのインストール
+- name: install readline
+  yum: name="readline-devel" state="present"
+
+- name: install zlib
+  yum: name="zlib-devel" state="present"
+
+- name: install openssl
+  yum: name="openssl-devel" state="present"
+
+# すでにgit cloneされてたらSkipする
+- name: check exist rbenv dir
+  stat: path="{{ rbenv_root_dir }}"
+  register: fm
+
+# rbenv git clone
+- name: git clone rbenv
+  git: 
+    repo: "https://github.com/sstephenson/rbenv.git"
+    dest: "{{ rbenv_root_dir }}"
+    version: "master"
+    clone: "yes"
+    accept_hostkey: "yes"
+  when: not fm.stat.exists
+
+# rbenv-build git clone
+- name: git clone ruby-build
+  git: 
+    repo: "https://github.com/sstephenson/ruby-build.git"
+    dest: "{{ rbenv_root_dir }}/plugins/ruby-build"
+    version: "master"
+    clone: "yes"
+    accept_hostkey: "yes"
+  when: not fm.stat.exists
+
+# profile.dへrbenvのPATHを通すシェルをcopy
+- name: copy rbenv.sh
+  template: src="./rbenv.sh.j2" dest="/etc/profile.d/rbenv.sh" owner="root" group="root" mode="644" force="no"
+  when: not fm.stat.exists
+
+# パーミッション変更
+- name: chmod rbenv
+  file: path="{{ rbenv_root_dir }}" mode="0757" state="directory" recurse="yes"
+  when: not fm.stat.exists
+
+# ruby 存在チェック
+- name: check exist ruby versions
+  shell: "bash -lc 'rbenv versions'"
+  register: ruby_versions
+  changed_when: false
+  failed_when: ruby_versions.rc not in [0,1]
+
+# ruby 2.4.1のインストール
+- name: install ruby 2.4.1
+  shell: "bash -lc 'rbenv install 2.4.1'"
+  when: "'2.4.1' not in ruby_versions.stdout"
+  register: ret_ruby_install
+  failed_when: ret_ruby_install.rc != 0
+
+# ruby 2.4.1をglobalにセット
+- name: set ruby 2.4.1
+  shell: "bash -lc 'rbenv global 2.4.1 && rbenv rehash'"
+  when: ret_ruby_install|changed
+  register: ret_global_set
+  failed_when: ret_global_set.rc != 0
+
+# ruby 2.4.1 bundlerのインストール
+- name: install bundler for ruby 2.4.1
+  shell: "bash -lc 'rbenv exec gem install bundler && rbenv rehash'"
+  when: ret_ruby_install|changed
+  register: ret_install_bundler
+  failed_when: ret_install_bundler.rc != 0
+
+
+
+
+
