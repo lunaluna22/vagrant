@@ -4,3 +4,9 @@
 
 - name: install git
   yum: name="git" state="present"
+
+- name: install zip
+  yum: name="zip" state="present"
+
+- name: install unzip
+  yum: name="unzip" state="present"
