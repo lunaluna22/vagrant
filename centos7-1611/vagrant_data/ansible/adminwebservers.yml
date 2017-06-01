@@ -1,0 +1,24 @@
+- hosts: adminwebservers
+  name: "adminwebservers playbook"
+  gather_facts: no
+  become: yes
+
+#  vars_files:
+
+  vars:
+
+  roles:
+    - common
+    - remi
+    - nginx
+    - php7
+    - php-fpm
+    - memcached
+    - phpmyadmin
+
+  tasks:
+
+  handlers:
+
+
+

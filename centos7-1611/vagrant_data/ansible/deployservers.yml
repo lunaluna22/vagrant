@@ -1,0 +1,21 @@
+- hosts: deployservers
+  name: deployservers_playbook
+  gather_facts: no
+  become: yes
+
+#  vars_files:
+
+  vars:
+
+  roles:
+    - common
+    - remi
+    - rbenv
+    - capistrano
+
+  tasks:
+
+  handlers:
+
+
+

@@ -1,0 +1,21 @@
+- hosts: dbservers
+  name: "dbservers playbook"
+  gather_facts: no
+  become: yes
+
+#  vars_files:
+
+  vars:
+
+  roles:
+    - common
+    - remi
+    - mysql
+
+  tasks:
+
+
+  handlers:
+
+
+

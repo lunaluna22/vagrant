@@ -1,27 +1,5 @@
-- hosts: vagrant
-  name: test-playbook
-  gather_facts: no
-  become: yes
-
-  vars:
-
-  roles:
-    - common
-    - remi
-    - nginx
-    - php7
-    - php-fpm
-    - mysql
-    - memcached
-    - frontwebapp
-    - phpmyadmin
-    - rbenv
-    - capistrano
-
-  tasks:
-
-
-  handlers:
-
-
+- include: dbservers.yml
+- include: frontwebservers.yml
+- include: adminwebservers.yml
+- include: deployservers.yml
 
