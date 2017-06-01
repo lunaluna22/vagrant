@@ -13,6 +13,7 @@
     - nginx
     - php7
     - php-fpm
+    - composer
     - memcached
     - frontwebapp
 
