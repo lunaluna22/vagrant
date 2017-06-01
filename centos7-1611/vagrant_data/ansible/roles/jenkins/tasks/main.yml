@@ -1,0 +1,24 @@
+## jenkinsタスク
+# javaインストール(openjdk)
+- name: install openjdk
+  yum: name="java-1.8.0-openjdk" state="present"
+
+# jenkinsリポジトリ追加
+- name: add jenkins repo
+  copy: src="./jenkins.repo" dest="/etc/yum.repos.d/jenkins.repo" owner="root" group="root" mode="0644"
+
+# jenkins公開鍵インポート
+- name: install jenkins-ci.org.key
+  rpm_key: key="https://jenkins-ci.org/redhat/jenkins-ci.org.key"
+
+# jenkinsインストール
+- name: install jenkins
+  yum: name="jenkins" state="present" enablerepo="jenkins"
+
+# jenkinsインストール
+- name: install jenkins
+  yum: name="jenkins" state="present" enablerepo="jenkins"
+
+# jenkins起動と自動起動ON
+- name: start jenkins
+  service: name="jenkins" state="started" enabled="yes"

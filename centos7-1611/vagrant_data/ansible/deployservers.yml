@@ -12,6 +12,7 @@
     - remi
     - rbenv
     - capistrano
+    - jenkins
 
   tasks:
 
