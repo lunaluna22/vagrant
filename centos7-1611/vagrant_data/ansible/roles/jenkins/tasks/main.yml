@@ -15,10 +15,6 @@
 - name: install jenkins
   yum: name="jenkins" state="present" enablerepo="jenkins"
 
-# jenkinsインストール
-- name: install jenkins
-  yum: name="jenkins" state="present" enablerepo="jenkins"
-
 # jenkins起動と自動起動ON
 - name: start jenkins
   service: name="jenkins" state="started" enabled="yes"
