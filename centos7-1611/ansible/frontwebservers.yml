@@ -8,14 +8,14 @@
   vars:
 
   roles:
-#    - common
-#    - remi
-#    - nginx
-#    - php7
-#    - php-fpm
-#    - composer
-#    - memcached
-#    - frontwebapp
+    - common
+    - remi
+    - nginx
+    - php7
+    - php-fpm
+    - composer
+    - memcached
+    - frontwebapp
 
   tasks:
 
