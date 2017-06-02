@@ -1,0 +1,7 @@
+## webアプリケーションセットアップタスク
+- name: copy conf file for front web app
+  # backupは必ずとる
+  copy: src="./frontweb.conf" dest="/etc/nginx/conf.d/frontweb.conf" backup="yes" owner="root" group="root" mode="644"
+  # nginx再起動
+  notify: restart nginx
+
