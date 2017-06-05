@@ -1,0 +1,1 @@
+#dbservers groupに適用される変数を宣言する#mysql rootユーザーパスワードmysql_root_password: "admin"

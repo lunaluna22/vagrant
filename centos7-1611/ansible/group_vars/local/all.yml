@@ -1,0 +1,1 @@
+#全groupに適用される変数を宣言する#開発ユーザー名dev_user: "devcat"#webアプリケーションDocument RootのRootディレクトリwebapp_root_dir: "/data"

@@ -7,8 +7,8 @@
     sha256sum="{{ sha256sum }}"
 
 # install先ディレクトリ準備(/dataがなければ作成)
-- name: create install dir
-  file: path="{{ install_root_dir }}" state="directory" owner="root" group="root" mode="0755"
+- name: create app root dir
+  file: path="{{ webapp_root_dir }}" state="directory" owner="{{ dev_user }}" group="{{ dev_user }}" mode="0755"
 
 # tarを展開
 - name: unzip phpmyadmin
@@ -16,46 +16,58 @@
 
 # ディレクトリ存在チェック
 - name: check exist dir
-  stat: path="{{ install_root_dir }}/{{ install_dir }}"
-  register: dir_exist
+  stat: path="{{ webapp_root_dir }}/{{ install_dir }}"
+  register: is_phpmyadmin_exist
 
 # ディレクトリmove(初回のみ実行)
 - name: move install dir
-  shell: 'cp -r "/tmp/{{ expand_dir_name }}" "{{ install_root_dir }}/{{ install_dir }}"'
-  register: mv_ret
-  when: not dir_exist.stat.exists
-  failed_when: mv_ret.rc not in [0, 1]
+  shell: 'cp -r "/tmp/{{ expand_dir_name }}" "{{ webapp_root_dir }}/{{ install_dir }}"'
+  register: ret_mv
+  when: not is_phpmyadmin_exist.stat.exists
+  failed_when: ret_mv.rc not in [0, 1]
+
+# 開発用ユーザーへchown(初回のみ実行)
+- name: chown install dir
+  file: path="{{ webapp_root_dir }}/{{ install_dir }}" state="directory" recurse="yes" owner="{{ dev_user }}" group="{{ dev_user }}"
+  when: not is_phpmyadmin_exist.stat.exists
 
 # create_tables.sql実行(初回のみ実行)
 - name: execute create_tables.sql
-  shell: 'mysql -u root < "{{ install_root_dir }}/{{ install_dir }}/sql/create_tables.sql"'
-  register: sql_ret
-  when: not dir_exist.stat.exists
-  failed_when: sql_ret.rc not in [0, 1]
+  shell: 'mysql -u root < "{{ webapp_root_dir }}/{{ install_dir }}/sql/create_tables.sql"'
+  register: ret_exec_sql
+  when: not is_phpmyadmin_exist.stat.exists
+  failed_when: ret_exec_sql.rc not in [0, 1]
 
 # pmaユーザの作成(初回のみ実行)
 - name: create pma user
   mysql_user: name="pma" password="pmapass" host="localhost" priv="phpmyadmin.*:ALL,GRANT" state="present"
-  when: not dir_exist.stat.exists
+  when: not is_phpmyadmin_exist.stat.exists
 
 # 設定ファイルコピー
-- name: copy php-fpm config files
+- name: copy nginx config files
   # backupは必ずとる
-  copy: src="{{ item.src }}" dest="{{ item.desc }}" backup="yes" owner="root" group="root" mode="644"
+  copy: src="{{ item.src }}" dest="{{ item.desc }}" backup="yes" owner="root" group="root" mode="0644"
   with_items:
     - { src: "./phpmyadmin.conf", desc: "/etc/nginx/conf.d/phpmyadmin.conf" }
-    - { src: "./config.inc.php", desc: "{{ install_root_dir }}/{{ install_dir }}/config.inc.php" }
-  register: ret
+  register: ret_copy_nginx_conf
+
+# 設定ファイルコピー
+- name: copy config.inc.php files
+  # backupは必ずとる
+  copy: src="{{ item.src }}" dest="{{ item.desc }}" backup="yes" owner="{{ dev_user }}" group="{{ dev_user }}" mode="0644"
+  with_items:
+    - { src: "./config.inc.php", desc: "{{ webapp_root_dir }}/{{ install_dir }}/config.inc.php" }
+  register: ret_copy_config_inc
 
   # nginx強制再起動
 - name: restart nginx after copying
   service: name="nginx" state="restarted"
-  when: ret.changed
+  when: ret_copy_nginx_conf.changed or ret_copy_config_inc.changed
 
   #php-fpm強制再起動
 - name: php-fpm after copying
   service: name="php-fpm" state="restarted"
-  when: ret.changed
+  when: ret_copy_nginx_conf.changed or ret_copy_config_inc.changed
 
 
 
