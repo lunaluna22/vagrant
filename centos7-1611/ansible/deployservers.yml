@@ -3,8 +3,6 @@
   gather_facts: no
   become: yes
 
-#  vars_files:
-
   vars:
 
   roles:

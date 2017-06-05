@@ -12,7 +12,7 @@
 # すでにgit cloneされてたらSkipする
 - name: check exist rbenv dir
   stat: path="{{ rbenv_root_dir }}"
-  register: fm
+  register: is_exist_rbenv_git_repo
 
 # rbenv git clone
 - name: git clone rbenv
@@ -22,7 +22,7 @@
     version: "master"
     clone: "yes"
     accept_hostkey: "yes"
-  when: not fm.stat.exists
+  when: not is_exist_rbenv_git_repo.stat.exists
 
 # rbenv-build git clone
 - name: git clone ruby-build
@@ -32,17 +32,17 @@
     version: "master"
     clone: "yes"
     accept_hostkey: "yes"
-  when: not fm.stat.exists
+  when: not is_exist_rbenv_git_repo.stat.exists
 
 # profile.dへrbenvのPATHを通すシェルをcopy
 - name: copy rbenv.sh
   template: src="./rbenv.sh.j2" dest="/etc/profile.d/rbenv.sh" owner="root" group="root" mode="644" force="no"
-  when: not fm.stat.exists
+  when: not is_exist_rbenv_git_repo.stat.exists
 
 # パーミッション変更
 - name: chmod rbenv
   file: path="{{ rbenv_root_dir }}" mode="0757" state="directory" recurse="yes"
-  when: not fm.stat.exists
+  when: not is_exist_rbenv_git_repo.stat.exists
 
 # ruby 存在チェック
 - name: check exist ruby versions

@@ -10,7 +10,7 @@
   with_items:
     - { src: "./php-fpm.conf", desc: "/etc/php-fpm.conf" }
     - { src: "./www.conf", desc: "/etc/php-fpm.d/www.conf" }
-  register: ret
+  register: ret_copy_conf_file
 
 # Session格納ディレクトリのパーミッション変更
 - name: chgrp session dir
@@ -20,5 +20,5 @@
 # php-fpm強制再起動
 - name: php-fpm after copying
   service: name="php-fpm" state="restarted"
-  when: ret.changed
+  when: ret_copy_conf_file.changed
 

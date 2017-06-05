@@ -28,23 +28,23 @@
 - name: copy my.cnf
   # backupは必ずとる
   copy: src="./my.cnf" dest="/etc/my.cnf" backup="yes" owner="root" group="root" mode="644"
-  register: ret
+  register: ret_copy_my_cnf
 
 # MySQL強制再起動
 - name: restart MySQL after copying
   service: name="mysqld" state="restarted"
-  when: ret.changed
+  when: ret_copy_my_cnf.changed
 
 # ファイル存在チェック
 - name: check change password .my.cnf file
   stat: path="~/.my.cnf"
-  register: fm
+  register: is_exist_user_my_cnf
 
 # 初期パスワードget(初期セットアップ時のみ実行)
 - name: get mysql initial password
   shell: "grep 'password is generated' /var/log/mysqld.log | awk -F'root@localhost: ' '{print $2}' creates=/root/.my.cnf"
   register: mysql_initial_root_password
-  when: not fm.stat.exists
+  when: not is_exist_user_my_cnf.stat.exists
 
 - debug: var=mysql_initial_root_password.stdout
 
@@ -61,18 +61,18 @@
 # ファイル存在チェック
 - name: check change password .my.cnf file
   stat: path="~/.my.cnf"
-  register: fm
+  register: is_exist_user_my_cnf
 
 # root ユーザのパスワード変更
 - name: mysql root change password host all
   mysql_user: name="root" password="{{mysql_root_password}}" host_all="yes"
-  register: ret
-  when: fm.stat.exists
+  register: ret_change_password
+  when: is_exist_user_my_cnf.stat.exists
 
 # root ユーザのパスワード変更に伴う.my.cnfの更新
 - name: update .my.cnf by template
   template: src="./.my.cnf.j2" dest="/root/.my.cnf" owner="root" group="root" mode="644" force="yes"
-  when: ret.changed
+  when: ret_change_password.changed
 
 # anonymous ユーザ削除
 - name: delete anonymous user
@@ -80,7 +80,7 @@
   with_items:
     - "localhost.localdomain"
     - "localhost"
-  when: fm.stat.exists
+  when: is_exist_user_my_cnf.stat.exists
 
 
 

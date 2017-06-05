@@ -2,12 +2,12 @@
 # すでにinstallされてたらSkipする
 - name: check exist composer
   stat: path=/usr/local/bin/composer
-  register: fm
+  register: is_exist_composer
 
 # composerインストール
 - name: install composer
   shell: "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin && mv /usr/local/bin/composer.phar /usr/local/bin/composer"
-  register: ret_install
-  failed_when: ret_install.rc != 0
-  when: not fm.stat.exists
+  register: ret_composer_install
+  failed_when: ret_composer_install.rc != 0
+  when: not is_exist_composer.stat.exists
 
