@@ -1,1 +1,1 @@
-mysql_version: "5.7.18"mysql_root_password: "admin"mysql_repo: "http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm"
+mysql_version: "5.7.18"mysql_repo: "http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm"
