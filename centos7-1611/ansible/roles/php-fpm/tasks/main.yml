@@ -16,9 +16,8 @@
 - name: chgrp session dir
   file: path="/var/lib/php/session" group="nginx"
 
-
 # php-fpm強制再起動
-- name: php-fpm after copying
+- name: restart php-fpm after copying
   service: name="php-fpm" state="restarted"
   when: ret_copy_conf_file.changed
 

@@ -65,7 +65,7 @@
   when: ret_copy_nginx_conf.changed or ret_copy_config_inc.changed
 
   #php-fpm強制再起動
-- name: php-fpm after copying
+- name: restart php-fpm after copying
   service: name="php-fpm" state="restarted"
   when: ret_copy_nginx_conf.changed or ret_copy_config_inc.changed
 
