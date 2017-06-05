@@ -1,7 +1,29 @@
 ## webアプリケーションセットアップタスク
-- name: copy conf file for front web app
-  # backupは必ずとる
-  copy: src="./frontweb.conf" dest="/etc/nginx/conf.d/frontweb.conf" backup="yes" owner="root" group="root" mode="644"
-  # nginx再起動
-  notify: restart nginx
+# nginx confファイルコピー
+- name: copy nginx conf
+  template: src="./frontweb.{{ stg }}.conf.j2" dest="/etc/nginx/conf.d/frontweb.conf" owner="root" group="root" mode="644" force="no" backup="yes"
+  register: ret_copy_conf_file
+
+# default.conf存在チェック
+- name: check exist default.conf
+  stat: path="/etc/nginx/conf.d/default.conf"
+  register: is_exist_default_conf
+
+# default.confを潰す
+- name: mv default.conf
+  shell: "mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.org"
+  register: ret_move_default_conf
+  failed_when: ret_move_default_conf.rc != 0
+  when: is_exist_default_conf.stat.exists
+
+# vagrant共有ディレクトリとシンボリックリンク作成(local環境のみ)
+- name: create app root link
+  file: src="{{ vgrant_sync_path }}" dest="{{ webapp_root_dir }}/{{ webapp_doc_root_dir }}" state="link" owner="{{ dev_user }}" group="{{ dev_user }}"
+  when: stg == "local"
+
+# nginx強制再起動
+- name: nginx restart after copying
+  service: name="php-fpm" state="restarted"
+  when: ret_copy_conf_file.changed or is_exist_default_conf.changed
+
 

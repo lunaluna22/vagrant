@@ -13,7 +13,7 @@
     - php-fpm
     - composer
     - memcached
-#    - frontwebapp
+    - frontwebapp
 
   tasks:
 

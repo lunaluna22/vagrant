@@ -1,1 +1,1 @@
-#全groupに適用される変数を宣言する#開発ユーザー名dev_user: "devcat"#webアプリケーションDocument RootのRootディレクトリwebapp_root_dir: "/data"
+#全groupに適用される変数を宣言する#環境定義stg: "local"#開発ユーザー名dev_user: "devcat"#webアプリケーションDocument RootのRootディレクトリwebapp_root_dir: "/data"
