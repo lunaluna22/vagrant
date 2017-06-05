@@ -71,7 +71,7 @@
 
 # root ユーザのパスワード変更に伴う.my.cnfの更新
 - name: update .my.cnf by template
-  template: src="./.my.cnf.j2" dest="/root/.my.cnf" owner="root" group="root" mode="644" force="yes"
+  template: src="./.my.cnf.j2" dest="/root/.my.cnf" owner="root" group="root" mode="644" force="yes" backup="yes"
   when: ret_change_password.changed
 
 # anonymous ユーザ削除
