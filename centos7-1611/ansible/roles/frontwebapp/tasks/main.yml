@@ -16,6 +16,10 @@
   failed_when: ret_move_default_conf.rc != 0
   when: is_exist_default_conf.stat.exists
 
+# install先ディレクトリ準備(/dataがなければ作成)
+- name: create app root dir
+  file: path="{{ webapp_root_dir }}" state="directory" owner="{{ dev_user }}" group="{{ dev_user }}" mode="0755"
+
 # vagrant共有ディレクトリとシンボリックリンク作成(local環境のみ)
 - name: create app root link
   file: src="{{ vgrant_sync_path }}" dest="{{ webapp_root_dir }}/{{ webapp_doc_root_dir }}" state="link" owner="{{ dev_user }}" group="{{ dev_user }}"
