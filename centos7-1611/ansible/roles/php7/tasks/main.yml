@@ -31,6 +31,19 @@
     - "php-pecl-memcached"
     - "php-pecl-redis"
 
+# PHP系モジュールインストール(local専用)
+- name: install php modules for local
+  yum: name="{{ item }}" state="present" enablerepo="remi,{{remi_php_version}},epel"
+  with_items:
+    - "php-pecl-xdebug"
+  when: stg == "local"
+
+# xdebug.iniコピー(local専用)
+- name: copy xdebug.ini for local
+  # backupは必ずとる
+  copy: src="./15-xdebug.ini" dest="/etc/php.d/15-xdebug.ini" backup="yes" owner="root" group="root" mode="644"
+  when: stg == "local"
+
 # php.iniコピー
 - name: copy php.ini
   # backupは必ずとる
