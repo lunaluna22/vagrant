@@ -1,7 +1,7 @@
-## webアプリケーションセットアップタスク
+## backendアプリケーションセットアップタスク
 # nginx confファイルコピー
 - name: copy nginx conf
-  template: src="./frontweb.{{ stg }}.conf.j2" dest="/etc/nginx/conf.d/frontweb.conf" owner="root" group="root" mode="644" backup="yes"
+  template: src="./backend.{{ stg }}.conf.j2" dest="/etc/nginx/conf.d/backend.conf" owner="root" group="root" mode="644" backup="yes"
   register: ret_copy_conf_file
 
 # default.conf存在チェック
@@ -22,7 +22,7 @@
 
 # vagrant共有ディレクトリとシンボリックリンク作成(local環境のみ)
 - name: create app root link
-  file: src="{{ vgrant_sync_path }}" dest="{{ webapp_root_dir }}/{{ webapp_doc_root_dir }}" state="link" owner="{{ dev_user }}" group="{{ dev_user }}"
+  file: src="{{ backend_vgrant_sync_path }}" dest="{{ webapp_root_dir }}/{{ backendapp_root_dir }}" state="link" owner="{{ dev_user }}" group="{{ dev_user }}"
   when: stg == "local"
 
 # nginx強制再起動

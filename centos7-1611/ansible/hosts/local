@@ -1,1 +1,1 @@
-[frontwebservers]localhost ansible_connection=local[dbservers]localhost ansible_connection=local[deployservers]localhost ansible_connection=local[adminwebservers]localhost ansible_connection=local[local:children]frontwebserversdbserversdeployserversadminwebservers
+[frontwebservers]localhost ansible_connection=local[dbservers]localhost ansible_connection=local[deployservers]localhost ansible_connection=local[backendappservers]localhost ansible_connection=local[local:children]frontwebserversdbserversdeployserversbackendappservers

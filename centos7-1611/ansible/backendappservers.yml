@@ -1,0 +1,24 @@
+- hosts: backendappservers
+  name: "backendappservers playbook"
+  gather_facts: no
+  become: yes
+
+  vars:
+
+  roles:
+#    - common
+#    - remi
+#    - nginx
+#    - php7
+#    - php-fpm
+#    - composer
+#    - memcached
+#    - phpmyadmin
+    - backendapp
+
+  tasks:
+
+  handlers:
+
+
+
