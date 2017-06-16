@@ -6,14 +6,14 @@
   vars:
 
   roles:
-#    - common
-#    - remi
-#    - nginx
-#    - php7
-#    - php-fpm
-#    - composer
-#    - memcached
-#    - phpmyadmin
+    - common
+    - remi
+    - nginx
+    - php7
+    - php-fpm
+    - composer
+    - memcached
+    - phpmyadmin
     - backendapp
 
   tasks:
