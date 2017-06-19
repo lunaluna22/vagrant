@@ -22,7 +22,7 @@
 
 # vagrant共有ディレクトリとシンボリックリンク作成(local環境のみ)
 - name: create app root link
-  file: src="{{ vgrant_sync_path }}" dest="{{ webapp_root_dir }}/{{ webapp_doc_root_dir }}" state="link" owner="{{ dev_user }}" group="{{ dev_user }}"
+  file: src="{{ front_vgrant_sync_path }}" dest="{{ webapp_root_dir }}/{{ webapp_doc_root_dir }}" state="link" owner="{{ dev_user }}" group="{{ dev_user }}"
   when: stg == "local"
 
 # nginx強制再起動

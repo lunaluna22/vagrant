@@ -1,1 +1,8 @@
-#frontwebservers groupに適用される変数を宣言する#webアプリケーションDocumentRootディレクトリ名webapp_doc_root_dir: "frontweb"#vagrantの共有ディレクトリパスvgrant_sync_path: "/apps/d_frontweb"
+#frontwebservers groupに適用される変数を宣言する
+
+#webアプリケーションDocumentRootディレクトリ名
+webapp_doc_root_dir: "frontweb"
+
+#vagrantの共有ディレクトリパス
+front_vgrant_sync_path: "/apps/d_frontweb"
+
