@@ -1,1 +1,8 @@
-#backendappservers groupに適用される変数を宣言する#backendアプリケーションDocumentRootディレクトリ名backendapp_root_dir: "backend"#vagrantの共有ディレクトリパスbackend_vgrant_sync_path: "/apps/d_backend"
+#backendappservers groupに適用される変数を宣言する
+
+#backendアプリケーションDocumentRootディレクトリ名
+backendapp_root_dir: "backend"
+
+#vagrantの共有ディレクトリパス
+backend_vgrant_sync_path: "/apps/d_backend"
+

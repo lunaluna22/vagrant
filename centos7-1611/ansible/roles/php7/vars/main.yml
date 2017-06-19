@@ -1,1 +1,2 @@
-php7_version: "7.1.6"remi_php_version: "remi-php71"
+php7_version: "7.1.6"
+remi_php_version: "remi-php71"
