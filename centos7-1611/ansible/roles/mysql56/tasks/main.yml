@@ -1,0 +1,83 @@
+## MySQLタスク
+# mariaDBアンインストール
+- name: unintall mariaDB
+  yum: name="mariadb-libs" state="absent"
+
+# リポジトリのインストール
+- name: install mysql repo
+  yum: name="{{mysql_repo}}" state="present"
+
+# リポジトリの無効化
+- name: disabled mysql repos
+  replace: dest="{{item}}" regexp="enabled *= *1" replace="enabled=0"
+  with_fileglob:
+    - "/etc/yum.repos.d/mysql-community*.repo"
+
+# MySQLのインストール
+- name: install mysql
+  yum: name="{{ item }}" state="present" enablerepo="mysql56-community"
+  with_items:
+    - "mysql-community-libs-{{mysql_version}}"
+    - "mysql-community-common-{{mysql_version}}"
+    - "mysql-community-server-{{mysql_version}}"
+    - "mysql-community-client-{{mysql_version}}"
+
+# MySQL起動と自動起動ON
+- name: start MySQL
+  service: name="mysqld" state="started" enabled="yes"
+
+# Ansible 用 mysql モジュールで必要なパッケージのインストール
+- name: install mysql_variables
+  yum: name="MySQL-python" state="present"
+
+# my.cnfコピー
+- name: copy my.cnf
+  # backupは必ずとる
+  copy: src="./my.cnf" dest="/etc/my.cnf" backup="yes" owner="root" group="root" mode="644"
+  register: ret_copy_my_cnf
+
+# MySQL強制再起動
+- name: restart MySQL after copying
+  service: name="mysqld" state="restarted"
+  when: ret_copy_my_cnf.changed
+
+# ファイル存在チェック
+- name: check change password .my.cnf file
+  stat: path="~/.my.cnf"
+  register: is_exist_user_my_cnf
+
+# root ユーザの初期パスワード変更(初期セットアップ時のみ実行)
+- name: mysql root change initial password
+  shell: mysql -u root --connect-expired-password -e "SET PASSWORD FOR root@localhost=PASSWORD('{{mysql_root_password}}');"
+  register: ret
+  when: not is_exist_user_my_cnf.stat.exists
+
+# .my.cnf作成(初期セットアップ時のみ実行)
+- name: create .my.cnf by template
+  template: src="./.my.cnf.j2" dest="/root/.my.cnf" owner="root" group="root" mode="644" force="no"
+
+# ファイル存在チェック
+- name: check change password .my.cnf file
+  stat: path="~/.my.cnf"
+  register: is_exist_user_my_cnf
+
+# root ユーザのパスワード変更
+- name: mysql root change password host all
+  mysql_user: name="root" password="{{mysql_root_password}}" host_all="yes"
+  register: ret_change_password
+  when: is_exist_user_my_cnf.stat.exists
+
+# root ユーザのパスワード変更に伴う.my.cnfの更新
+- name: update .my.cnf by template
+  template: src="./.my.cnf.j2" dest="/root/.my.cnf" owner="root" group="root" mode="644" force="yes" backup="yes"
+  when: ret_change_password.changed
+
+# anonymous ユーザ削除
+- name: delete anonymous user
+  mysql_user: name="" host="{{ item }}" state="absent"
+  with_items:
+    - "localhost.localdomain"
+    - "localhost"
+  when: is_exist_user_my_cnf.stat.exists
+
+
